@@ -130,21 +130,21 @@ function setup_fedora_vm() {
 	sudo snap install protobuf --classic
 
 	# clone upstream repo
-	cd $GOPATH/src
-	if [[ -z "$mygitid" ]]; then
-	    git clone https://github.com/ovn-org/ovn-kubernetes.git
-	else 		
-	    git clone https://github.com/$mygitid/ovn-kubernetes.git
-	fi
+	#cd $GOPATH/src
+	#if [[ -z "$mygitid" ]]; then
+	#    git clone https://github.com/ovn-org/ovn-kubernetes.git
+	#else 		
+	#    git clone https://github.com/$mygitid/ovn-kubernetes.git
+	#fi
 
 	#clone k8s
 	cd $GOPATH/src
-	mkdir k8s.io; cd k8s.io
-	git clone https://github.com/kubernetes/kubernetes.git
-	#build e2e test binary
-	pushd $GOPATH/src/k8s.io/kubernetes
-	make WHAT="test/e2e/e2e.test vendor/github.com/onsi/ginkgo/ginkgo"
-	popd
+	#mkdir k8s.io; cd k8s.io
+	#git clone https://github.com/kubernetes/kubernetes.git
+	##build e2e test binary
+	#pushd $GOPATH/src/k8s.io/kubernetes
+	#make WHAT="test/e2e/e2e.test vendor/github.com/onsi/ginkgo/ginkgo"
+	#popd
 
         echo "alias kc=kubectl" >> ${HOME}/.bashrc
 	echo "export GOPATH=$HOME/go" >> ${HOME}/.bashrc
