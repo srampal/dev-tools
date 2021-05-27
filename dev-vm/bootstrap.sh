@@ -27,7 +27,8 @@ function setup_fedora_vm() {
 
 
 	#install Go v1.16
-	mkdir -p $HOME/go/src
+	sudo mkdir -p $HOME/go/src
+	sudo mkdir -p $HOME/go/bin
 
         #sync
 
@@ -138,7 +139,7 @@ function setup_fedora_vm() {
 	#fi
 
 	#clone k8s
-	cd $GOPATH/src
+	#cd $GOPATH/src
 	#mkdir k8s.io; cd k8s.io
 	#git clone https://github.com/kubernetes/kubernetes.git
 	##build e2e test binary
@@ -152,6 +153,8 @@ function setup_fedora_vm() {
 	echo "export PATH=$PATH:/usr/local/go/bin" >> ${HOME}/.bashrc
 	echo "export PATH=$PATH:$HOME/bin" >> ${HOME}/.bashrc
         echo "export KUBECONFIG=${HOME}/admin.conf" >> ${HOME}/.bashrc
+
+        echo "  Done ...   rebooting ... "
 
 	#Reboot
 	sudo reboot
