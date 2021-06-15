@@ -32,10 +32,10 @@ function setup_fedora_vm() {
 
         #sync
 
-	git clone https://github.com/udhos/update-golang.git
-	pushd update-golang
-	sudo ./update-golang.sh
-	popd
+	#git clone https://github.com/udhos/update-golang.git
+	#pushd update-golang
+	#./update-golang.sh
+	#popd
 
 	export GOPATH=$HOME/go
 	export PATH=$PATH:$GOPATH/bin
@@ -47,7 +47,7 @@ function setup_fedora_vm() {
 	#rm -rf ./update-golang
 
         #install golang
-        # sudo dnf -y install golang
+        sudo dnf -y install golang
 
 	#install docker
 
