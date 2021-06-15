@@ -1,0 +1,1 @@
+{"rsync":{"/vagrant":{"type":"rsync","guestpath":"/vagrant","hostpath":"/Users/srampal/go/src/github.com/dev-tools/dev-vm","disabled":false,"__vagrantfile":true,"owner":"vagrant","group":"vagrant"}}}
