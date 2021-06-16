@@ -22,6 +22,8 @@ function setup_fedora_vm() {
 
         git config --global user.name "Sanjeev Rampal"
         git config --global user.email "srampal@redhat.com"
+        git config --global credential.helper cache
+        git config --global credential.helper 'cache --timeout=600'
 
         sudo dnf -y install gcc 
 
