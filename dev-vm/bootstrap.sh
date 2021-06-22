@@ -156,6 +156,9 @@ function setup_fedora_vm() {
 	echo "export PATH=$PATH:$HOME/bin" >> ${HOME}/.bashrc
         echo "export KUBECONFIG=${HOME}/admin.conf" >> ${HOME}/.bashrc
         echo "export GO111MODULE=on" >> ${HOME}/.bashrc
+        echo "alias gitgraph=\"git log --all --decorate --oneline --graph\"" >> ${HOME}/.bashrc
+        echo "alias kovn=\"kubectl -n ovn-kubernetes\"" >> ${HOME}/.bashrc
+        echo "alias kks=\"kubectl -n kube-system\"" >> ${HOME}/.bashrc
 
         echo "  Done ...   rebooting ... "
 
