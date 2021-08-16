@@ -132,6 +132,16 @@ function setup_fedora_vm() {
 	#install Protobuf
 	sudo snap install protobuf --classic
 
+        #install python
+        sudo dnf -y install python3
+
+        #install pip
+        sudo dnf -y install python3-pip
+
+        #install inv
+        sudo pip install inv
+
+
 	# clone upstream repo
 	#cd $GOPATH/src
 	#if [[ -z "$mygitid" ]]; then
