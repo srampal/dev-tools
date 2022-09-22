@@ -1,0 +1,31 @@
+ip link add ve1 type veth peer ve2
+sudo ip link set ve1 up
+// veth deletion
+sudo ip link set ve1 down
+sudo ip link delete ve1       // also deletes the pair veth
+
+
+// tc programs can be added on veth first to check but equivalently to eth0 etc
+tc qdisc show dev ve1
+// Add a clsact/ qdisc for bpf programs to attach to
+sudo tc qdisc add dev ve1 clsact
+
+// Add tc program, each successive add to same interface lowers preference (higher priority)
+sudo tc filter add dev ve1 ingress bpf da obj <my_tc_prog.o> sec <my_tc_section>
+
+// Can add at specific preference as well 
+sudo tc filter add dev ve1 preference 49510 ingress bpf da obj <my_tc_prog.o> sec <my_tc_section>
+
+tc filter show dev ve1 ingress
+
+
+// deleting all filters/ bpf programs
+sudo tc filter delete dev ve1 ingress 
+
+// or delete the qdisc itself to clean up everything 
+sudo tc qdisc del dev ve1 clsact
+
+// or delete a specific handle at a specific preference
+sudo tc filter delete dev ve1 preference 49140 handle 0x2 ingress bpf
+
+

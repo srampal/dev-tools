@@ -70,7 +70,7 @@ function setup_fedora_vm() {
 	sudo systemctl enable libvirtd
 
 	#Install kind
-	curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.11.1/kind-linux-amd64
+	curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.14.0/kind-linux-amd64
 	chmod +x ./kind
 	sudo mv ./kind /usr/local/bin
 
@@ -94,14 +94,17 @@ function setup_fedora_vm() {
 	#Install asciinema for console demo
 	#TEMPsudo dnf install -y asciinema
 	
-        sudo dnf -y install firewalld 
+        #sudo dnf -y install firewalld 
 
-        sudo systemctl enable firewalld
-        sudo systemctl start firewalld
+        #sudo systemctl enable firewalld
+        #sudo systemctl start firewalld
 
 	#Change firewall to use iptables
-	sudo sed -i "s/^FirewallBackend\=.*/FirewallBackend=iptables/" "/etc/firewalld/firewalld.conf"
-	sudo systemctl restart firewalld
+	#sudo sed -i "s/^FirewallBackend\=.*/FirewallBackend=iptables/" "/etc/firewalld/firewalld.conf"
+	#sudo systemctl restart firewalld
+
+        # disable selinux
+        sudo sed -i 's/enforcing/disabled/g' /etc/selinux/config /etc/selinux/config
 
 	#Install xterm
 	sudo dnf install -y xterm
@@ -141,6 +144,36 @@ function setup_fedora_vm() {
         #install inv
         sudo pip install inv
 
+        #install libbpf-devel
+        sudo dnf -y install libbpf-devel
+
+        #install clang 
+        sudo dnf -y install clang
+
+        #install llvm, llvm-devel 
+        sudo dnf -y install llvm
+        sudo dnf -y install llvm-devel
+
+        #glibc-devel-i686 needed for  some gnu C header files
+        sudo dnf install -y glibc-devel.i686
+
+        #install bpftool
+        sudo dnf install -y bpftool
+
+        # install bpf2go
+        go install github.com/cilium/ebpf/cmd/bpf2go@master
+
+        #install rust & cargo
+        sudo dnf install -y rust cargo
+
+        # install bison and flex to help with kernel builds
+        sudo dnf install -y bison
+        sudo dnf install -y flex
+
+        # install openssl-devel, zstd and bc to help with kernel builds
+        sudo dnf install -y openssl-devel
+        sudo dnf install -y bc
+        sudo dnf install -y zstd 
 
 	# clone upstream repo
 	#cd $GOPATH/src

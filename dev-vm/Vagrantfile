@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "fedora/33-cloud-base"
+  config.vm.box = "fedora/36-cloud-base"
   config.vm.disk :disk, size: "32GB", primary: true
 
   # Disable automatic box update checking. If you disable this, then
@@ -45,7 +45,7 @@ Vagrant.configure("2") do |config|
   # the path on the guest to mount the folder. And the optional third
   # argument is a set of non-required options.
 
-  #config.vm.synced_folder "/Users/srampal/go/src", "/home/vagrant/go/src"
+  config.vm.synced_folder "/Users/srampal/repos/", "/home/vagrant/repos"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -63,10 +63,11 @@ Vagrant.configure("2") do |config|
   # information on available options.
 
 config.vm.provider "virtualbox" do |v|
-  v.memory = 8192 
+  v.memory = 18000 
   v.cpus = 4
 end
 
+  config.vm.hostname = "default-vm"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the
@@ -76,4 +77,6 @@ end
   #   apt-get install -y apache2
   # SHELL
   #config.vm.provision :shell, path: "stub-bootstrap.sh"
+  config.vm.provision :shell, :inline => "sudo rm /etc/localtime && sudo ln -s /usr/share/zoneinfo/America/New_York /etc/localtime", run: "always"
+
 end
