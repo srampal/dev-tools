@@ -1,0 +1,25 @@
+kind: Cluster
+name: cluster2
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+  extraPortMappings:
+  - containerPort: 32000
+    hostPort: 32000
+    listenAddress: "0.0.0.0"
+    protocol: TCP
+  kubeadmConfigPatches:
+  - |
+    kind: InitConfiguration
+kubeadmConfigPatches:
+- |
+  kind: InitConfiguration
+  nodeRegistration:
+    kubeletExtraArgs:
+      authorization-mode: "AlwaysAllow"
+networking:
+  podSubnet: 10.241.0.0/16
+  serviceSubnet: 10.111.0.0/16
+  disableDefaultCNI: true
+

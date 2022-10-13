@@ -1,0 +1,12 @@
+apiVersion: v1
+clusters:
+  cluster1: # data plane cluster
+    kubeConfig: /home/vagrant/.kube/config
+    kubeContext: kind-c1
+  cluster2: # data plane cluster
+    kubeConfig: /home/vagrant/.kube/config
+    kubeContext: kind-c2
+  managementPlane: # management cluster
+    kubeConfig: /home/vagrant/.kube/config
+    kubeContext: kind-c1
+

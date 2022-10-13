@@ -1,3 +1,9 @@
+To compile the tc bpf program
+
+clang -g -O2 -Wall -target bpf -I ~/iproute2/include/ -c tc-example.c -o tc-example.o
+
+
+
 ip link add ve1 type veth peer ve2
 sudo ip link set ve1 up
 // veth deletion

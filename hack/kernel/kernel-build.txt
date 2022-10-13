@@ -1,0 +1,17 @@
+On a machine that has all the necessary packages for building ...
+
+Clone the the source and get the config file from a working VM whose config one would want to preserve ...
+
+export LMC_KEEP=drivers/net:net
+make olddefconfig  
+make localmodconfig
+# manually add any config options that may still be needed
+make -j $(nproc)
+# make modules not necessary here but can try if needed 
+sudo make modules_install
+
+sudo make install
+
+Now update grub etc as stated in the bookmarked web site link
+
+

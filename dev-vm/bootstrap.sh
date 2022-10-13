@@ -170,10 +170,11 @@ function setup_fedora_vm() {
         sudo dnf install -y bison
         sudo dnf install -y flex
 
-        # install openssl-devel, zstd and bc to help with kernel builds
+        # install openssl-devel, zstd, dwarves and bc to help with kernel builds
         sudo dnf install -y openssl-devel
         sudo dnf install -y bc
         sudo dnf install -y zstd 
+        sudo dnf install -y dwarves 
 
 	# clone upstream repo
 	#cd $GOPATH/src
