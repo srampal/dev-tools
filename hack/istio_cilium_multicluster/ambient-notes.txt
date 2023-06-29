@@ -1,0 +1,4 @@
+Installing Istio in Ambient mode with basic Prometheus annotations
+
+istioctl install --set profile=ambient --set components.ingressGateways[0].enabled=true --set components.ingressGateways[0].name=istio-ingressgateway  --set meshConfig.enablePrometheusMerge=false --skip-confirmation
+

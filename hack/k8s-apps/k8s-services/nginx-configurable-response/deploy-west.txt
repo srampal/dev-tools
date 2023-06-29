@@ -1,0 +1,9 @@
+kubectl create ns demo
+kubectl apply -f cm-west.yaml -n demo
+kubectl apply -f nginx-deployment.yaml -n demo
+kubectl apply -f nginx-nlb-svc.yaml -n demo
+
+
+
+
+kubectl expose deployment nginx-deployment -n demo

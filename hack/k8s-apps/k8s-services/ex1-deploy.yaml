@@ -15,8 +15,10 @@ spec:
         app: nginx
     spec:
       containers:
-      - image: nginx
+#      - image: nginx
+#      - image: dasskelett/nginx-quic
+      - image: cilium/echoserver
         name: nginx
-        ports:
-        - containerPort: 8080
+#        ports:
+#        - containerPort: 8080
 

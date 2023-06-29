@@ -1,0 +1,44 @@
+kind: Cluster
+name: amb1
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+  - role: control-plane
+  - role: worker
+  - role: worker
+    extraPortMappings:
+    - containerPort: 31000
+      hostPort: 31000
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 31001
+      hostPort: 31001
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 31002
+      hostPort: 31002
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 32000
+      hostPort: 32000
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 32100
+      hostPort: 32100
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 32201
+      hostPort: 32200
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 32201
+    - containerPort: 32300
+      hostPort: 32300
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 32301
+      hostPort: 32301
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+networking:
+  podSubnet: 10.240.0.0/16
+  serviceSubnet: 10.110.0.0/16

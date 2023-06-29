@@ -70,7 +70,7 @@ function setup_fedora_vm() {
 	sudo systemctl enable libvirtd
 
 	#Install kind
-	curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.14.0/kind-linux-amd64
+	curl -Lo ./kind https://kind.sigs.k8s.io/dl/v0.20.0/kind-linux-amd64
 	chmod +x ./kind
 	sudo mv ./kind /usr/local/bin
 
@@ -194,15 +194,19 @@ function setup_fedora_vm() {
 	#popd
 
         echo "alias kc=kubectl" >> ${HOME}/.bashrc
+        echo "alias ic=istioctl" >> ${HOME}/.bashrc
 	echo "export GOPATH=$HOME/go" >> ${HOME}/.bashrc
-	echo "export PATH=$PATH:$GOPATH/bin" >> ${HOME}/.bashrc
-	echo "export PATH=$PATH:/usr/local/go/bin" >> ${HOME}/.bashrc
+	echo "export PATH=$PATH:$GOPATH/bin"
+	echo "export PATH=$PATH:/usr/local/go/bin"c
 	echo "export PATH=$PATH:$HOME/bin" >> ${HOME}/.bashrc
         echo "export KUBECONFIG=${HOME}/admin.conf" >> ${HOME}/.bashrc
+	echo "export EDITOR=/usr/bin/vi" >> ${HOME}/.bashrc
         echo "export GO111MODULE=on" >> ${HOME}/.bashrc
         echo "alias gitgraph=\"git log --all --decorate --oneline --graph\"" >> ${HOME}/.bashrc
         echo "alias kovn=\"kubectl -n ovn-kubernetes\"" >> ${HOME}/.bashrc
         echo "alias kks=\"kubectl -n kube-system\"" >> ${HOME}/.bashrc
+        echo "alias kc1=\"kubectl --context kind-cluster1\" >> ${HOME}/.bashrc
+        echo "alias kc2=\"kubectl --context kind-cluster2\" >> ${HOME}/.bashrc
 
         echo "  Done ...   rebooting ... "
 

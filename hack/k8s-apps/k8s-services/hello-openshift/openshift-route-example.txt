@@ -1,0 +1,13 @@
+oc new-project hello-openshift
+
+oc create -f https://raw.githubusercontent.com/openshift/origin/master/examples/hello-openshift/hello-pod.json -n hello-openshift
+
+oc expose pod/hello-openshift -n hello-openshift
+
+oc expose svc hello-openshift -n hello-openshift
+
+oc get routes -n hello-openshift
+
+Note: to disable scc/ pod sec
+oc adm  policy add-scc-to-user anyuid system:serviceaccount:<namespace_name>:default
+
