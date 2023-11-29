@@ -1,6 +1,10 @@
 kind: Cluster
 name: amb1
 apiVersion: kind.x-k8s.io/v1alpha4
+containerdConfigPatches:
+- |-
+  [plugins."io.containerd.grpc.v1.cri".registry]
+    config_path = "/etc/containerd/certs.d"
 nodes:
   - role: control-plane
   - role: worker
@@ -22,21 +26,36 @@ nodes:
       hostPort: 32000
       listenAddress: "0.0.0.0"
       protocol: TCP
+    - containerPort: 32001
+      hostPort: 32001
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 32002
+      hostPort: 32002
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 31100
+      hostPort: 31100
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 31101
+      hostPort: 31101
+      listenAddress: "0.0.0.0"
+      protocol: TCP
+    - containerPort: 31102
+      hostPort: 31102
+      listenAddress: "0.0.0.0"
+      protocol: TCP
     - containerPort: 32100
       hostPort: 32100
       listenAddress: "0.0.0.0"
       protocol: TCP
-    - containerPort: 32201
-      hostPort: 32200
+    - containerPort: 32101
+      hostPort: 32101
       listenAddress: "0.0.0.0"
       protocol: TCP
-    - containerPort: 32201
-    - containerPort: 32300
-      hostPort: 32300
-      listenAddress: "0.0.0.0"
-      protocol: TCP
-    - containerPort: 32301
-      hostPort: 32301
+    - containerPort: 32102
+      hostPort: 32102
       listenAddress: "0.0.0.0"
       protocol: TCP
 networking:
