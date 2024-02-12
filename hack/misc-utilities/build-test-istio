@@ -1,0 +1,110 @@
+#!/bin/bash
+
+kind create cluster --config - << EOF 
+kind: Cluster
+apiVersion: kind.x-k8s.io/v1alpha4
+nodes:
+- role: control-plane
+- role: worker
+- role: worker
+containerdConfigPatches:
+  - |-
+    [plugins."io.containerd.grpc.v1.cri".registry.mirrors."localhost:5000"]
+      endpoint = ["http://kind-registry:5000"]
+EOF
+
+reg_name='kind-registry'
+reg_port='5000'
+running="$(docker inspect -f '{{.State.Running}}' "${reg_name}" 2>/dev/null || true)"
+if [ "${running}" != 'true' ]; then
+  docker run \
+    -d --restart=always -p "127.0.0.1:${reg_port}:5000" --name "${reg_name}" \
+    registry:2
+fi
+docker network connect "kind" "${reg_name}" || true
+cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: local-registry-hosting
+  namespace: kube-public
+data:
+  localRegistryHosting.v1: |
+    host: "localhost:${reg_port}"
+    help: "https://kind.sigs.k8s.io/docs/user/local-registry/"
+EOF
+
+export HUB=localhost:5000
+export TAG=ambient
+
+make docker CONDITIONAL_HOST_MOUNTS='--mount type=bind,source='$(cd ../ztunnel;pwd)',destination=/ztunnel' BUILD_ZTUNNEL=1 BUILD_ZTUNNEL_REPO=/ztunnel
+
+function pull_to_local_registry() {
+  local REMOTE
+  local LOCAL
+  for i in app app_sidecar_debian_11 app_sidecar_ubuntu_bionic app_sidecar_ubuntu_jammy ext-authz install-cni istioctl operator pilot proxyv2 ztunnel; do
+    REMOTE="${HUB}/${i}:${TAG}"
+    LOCAL="localhost:5000/${i}:${TAG}"
+    # only pull and tag if hub is not localhost
+    if [[ "${HUB}" != "localhost:5000" ]]; then
+        docker pull "${REMOTE}"
+        docker tag "${REMOTE}" "${LOCAL}"
+    fi
+    echo pushing "${LOCAL}"
+    docker push "${LOCAL}"
+  done
+}
+
+pull_to_local_registry
+
+go run ./istioctl/cmd/istioctl/ install -d manifests/ --set hub=$HUB --set tag=$TAG -y --set meshConfig.accessLogFile=/dev/stdout --set meshConfig.defaultHttpRetryPolicy.attempts=0 --set values.global.imagePullPolicy=Always --set values.global.logging.level="all:debug" -f - <<EOF
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+spec:
+  meshConfig:
+      defaultConfig:
+        proxyMetadata:
+          ISTIO_META_ENABLE_HBONE: "true"
+  components:
+    cni:
+      enabled: true
+    ztunnel:
+      enabled: true
+    ingressGateways:
+    - name: istio-ingressgateway
+      enabled: false
+  values:
+    pilot:
+      env:
+        VERIFY_CERTIFICATE_AT_CLIENT: "true"
+        ENABLE_AUTO_SNI: "true"
+        PILOT_ENABLE_HBONE: "true"
+        CA_TRUSTED_NODE_ACCOUNTS: "istio-system/ztunnel,kube-system/ztunnel"
+        PILOT_ENABLE_AMBIENT_CONTROLLERS: "true"
+    ztunnel:
+      enabled: true
+      redirectMode: "inpod"
+      meshConfig:
+        defaultConfig:
+          proxyMetadata:
+            # ISTIO_META_DNS_CAPTURE: "true"
+            ISTIO_META_DNS_AUTO_ALLOCATE: "true"
+            # DNS_PROXY_ADDR: "0.0.0.0:15053"
+    meshConfig:
+      defaultConfig:
+        proxyMetadata:
+          # ISTIO_META_DNS_CAPTURE: "true"
+          ISTIO_META_DNS_AUTO_ALLOCATE: "true"
+          # DNS_PROXY_ADDR: "0.0.0.0:15053"
+      accessLogFile: /dev/stdout
+    cni:
+      excludeNamespaces:
+        - istio-system
+        - kube-system
+      logLevel: debug
+      privileged: true
+      ambient:
+        # Set ambient redirection mode: "iptables" or "ebpf"
+        redirectMode: "inpod"
+        enabled: true
+EOF

@@ -12,7 +12,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://vagrantcloud.com/search.
-  config.vm.box = "fedora/37-cloud-base"
+  config.vm.box = "fedora/36-cloud-base"
   config.vm.disk :disk, size: "40GB", primary: true
 
   # Disable automatic box update checking. If you disable this, then
@@ -30,7 +30,32 @@ Vagrant.configure("2") do |config|
   # within the machine from a port on the host machine and only allow access
   # via 127.0.0.1 to disable public access
   # config.vm.network "forwarded_port", guest: 80, host: 8080, host_ip: "127.0.0.1"
+
+  # Istio dev, port 1313 is used for the UI local dev
+  config.vm.network "forwarded_port", guest: 1313, host:1313, host_ip: "127.0.0.1"
+  #
+  # Cluster 1 app NodePorts 
   config.vm.network "forwarded_port", guest: 31000, host: 31000, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 31001, host: 31001, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 31002, host: 31002, host_ip: "127.0.0.1"
+  # Cluster 1 addons (Prometheus etc) 
+  config.vm.network "forwarded_port", guest: 31100, host: 31100, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 31101, host: 31101, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 31102, host: 31102, host_ip: "127.0.0.1"
+  # Cluster 2 app NodePorts 
+  config.vm.network "forwarded_port", guest: 32000, host: 32000, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 32001, host: 32001, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 32002, host: 32002, host_ip: "127.0.0.1"
+  # Cluster 2 addons (Prometheus etc) 
+  config.vm.network "forwarded_port", guest: 32100, host: 32100, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 32101, host: 32101, host_ip: "127.0.0.1"
+  config.vm.network "forwarded_port", guest: 32102, host: 32102, host_ip: "127.0.0.1"
+  # For Prometheus 
+  ##CHANGEconfig.vm.network "forwarded_port", guest: 9090, host: 9090, host_ip: "127.0.0.1"
+  # For Grafana 
+  ##CHANGEconfig.vm.network "forwarded_port", guest: 3000, host: 3000, host_ip: "127.0.0.1"
+  # For Kiali 
+  ##CHANGEconfig.vm.network "forwarded_port", guest: 20001, host: 20001, host_ip: "127.0.0.1"
 
   # Create a private network, which allows host-only access to the machine
   # using a specific IP.
@@ -66,10 +91,20 @@ Vagrant.configure("2") do |config|
 config.vm.provider "virtualbox" do |v|
   v.memory = 20000 
   v.cpus = 4
-  v.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+#  v.customize ["guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 10000]
+# sync time every 10 seconds
+        v.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-interval", 10000 ]
+        # adjustments if drift > 100 ms
+        v.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-min-adjust", 100 ]
+        # sync time on restore
+        v.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-on-restore", 1 ]
+        # sync time on start
+        v.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-start", 1 ]
+        # at 1 second drift, the time will be set and not "smoothly" adjusted
+        v.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ] 
 end
 
-  config.vm.hostname = "sr-vm"
+  config.vm.hostname = "ambient-vm"
 
   # Enable provisioning with a shell script. Additional provisioners such as
   # Ansible, Chef, Docker, Puppet and Salt are also available. Please see the

@@ -1,0 +1,10 @@
+From istio repo ...
+
+kubectl apply -f samples/addons/prometheus.yaml
+kubectl apply -f samples/addons/grafana.yaml
+
+kubectl port-forward service/prometheus -n istio-system --address 0.0.0.0  31101:9090
+kubectl port-forward service/grafana -n istio-system --address 0.0.0.0 31102:3000
+
+Note: without the address 0.0.0.0, will work only from the guest VM itself but not from the host m/c
+

@@ -1,0 +1,6 @@
+ztunnel   metrics (should apply to sidecar proxy metrics as well)
+
+kc exec -it ztunnel-dkkmk -n istio-system -- curl localhost/metrics:15020
+kc exec -it ds/ztunnel -n istio-system -- curl localhost/metrics:15020
+
+

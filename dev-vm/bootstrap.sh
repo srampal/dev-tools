@@ -209,6 +209,10 @@ function setup_fedora_vm() {
         echo "alias kc2=\"kubectl --context kind-cluster2\" >> ${HOME}/.bashrc
         echo "complete -W "\`find . -iname \"?akefil*\" | xargs -I {} grep -hoE '^[a-zA-Z0-9_.-]+:([^=]|$)' {} | sed 's/[^a-zA-Z0-9_.-]*$//' | sort -u\`" make" >> ${HOME}/.bashrc
 
+        sudo echo "DefaultLimitNOFILE=10000:524288" >> /etc/systemd/system.conf
+        sudo echo "DefaultLimitNOFILE=10000:524288" >> /etc/systemd/user.conf
+        echo " Update /etc/chrony.conf for step sync "
+
         echo "  Done ...   rebooting ... "
 
 	#Reboot

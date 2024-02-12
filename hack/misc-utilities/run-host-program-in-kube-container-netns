@@ -1,0 +1,6 @@
+netns_prod=$(kubectl exec deploy/podName-v1 -c containerName -- stat -L -c '%i' /proc/self/ns/net)
+### replace with pod and container name of interest
+
+netns_on_host=$(sudo lsns -t net $netns_prod -J | jq -r '{p:.namespaces[0].pid}| ["/proc/",.p,"/ns/net"]|join("")' )
+sudo nsenter --net=$netns_on_host
+
