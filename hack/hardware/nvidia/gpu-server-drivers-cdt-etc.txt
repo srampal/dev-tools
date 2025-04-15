@@ -1,0 +1,99 @@
+Overall steps: NVidia Driver, Container toolkit,  then hook for enabling GPU visibility into containers (in case of podman this is via CDI)
+
+
+
+1) Driver:
+----------
+
+Follow directions from
+https://docs.nvidia.com/datacenter/tesla/driver-installation-guide/index.html
+
+Before installing, have the repo list updated, it should look something like this 
+
+Updating Subscription Management repositories.
+repo id                                             repo name
+ROCm-6.2.4                                          ROCm6.2.4
+amdgpu                                              amdgpu
+codeready-builder-for-rhel-9-x86_64-rpms            Red Hat CodeReady Linux Builder for RHEL 9 x86_64 (RPMs)
+cuda-rhel9-x86_64                                   cuda-rhel9-x86_64
+epel                                                Extra Packages for Enterprise Linux 9 - x86_64
+epel-cisco-openh264                                 Extra Packages for Enterprise Linux 9 openh264 (From Cisco) - x86_64
+rhel-9-for-x86_64-appstream-rpms                    Red Hat Enterprise Linux 9 for x86_64 - AppStream (RPMs)
+rhel-9-for-x86_64-baseos-rpms                       Red Hat Enterprise Linux 9 for x86_64 - BaseOS (RPMs)
+
+
+Install make, gcc, g++ in addition to the other packages, repos
+listed there
+
+Key steps are
+- sudo dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/$distro/$arch/cuda-$distro.repo
+- sudo dnf module install nvidia-driver:570-dkms
+(use newer version than 570 as available)
+
+(if you use 570-open instead it will only intall kmod source and not compile it or install the kernel module.. so prefer not to)
+
+dkms should show something like this to indicate the kernel module is built and installed (not just "added")
+[cloud-user@sanjeevr-summit ~]$ sudo dkms status
+nvidia-open/570.124.06, 5.14.0-503.34.1.el9_5.x86_64, x86_64: installed
+
+If above just shows "added", can install using
+sudo dkms install nvidia-open/570.124.06
+
+Finally to confirm the driver is installed use the following
+nvidia-smi (should show outpu incl GPU type)
+
+cat /proc/driver/nvidia/version
+
+NVRM version: NVIDIA UNIX Open Kernel Module for x86_64  570.124.06  Release Build  (root@sanjeevr-summit)  Fri Mar 28 17:17:19 EDT 2025
+GCC version:  gcc version 11.5.0 20240719 (Red Hat 11.5.0-5) (GCC)
+
+[cloud-user@sanjeevr-summit ~]$ lsmod | grep nvidia
+nvidia_uvm           4100096  0
+nvidia              11669504  1 nvidia_uvm
+drm                   782336  5 drm_kms_helper,drm_shmem_helper,nvidia,virtio_gpu
+
+
+2) Nvidia Container Toolkit
+---------------------------
+
+Note that there are (atleast) 3 flavors of "NVidia toolkits"
+
+Nvidia container toolkit
+Allows docker/ podman containers to use GPUs (GPUs pass-through to
+containers). Provides the nvidia-container-runtime to manage GPU access inside containers.
+
+sudo dnf install -y nvidia-container-toolkit
+
+CUDA toolkit
+A software suite that provides GPU-accelerated computing libraries, compilers, and development tools for running CUDA applications natively on your system. Includes nvcc (CUDA compiler), cuBLAS, cuDNN, and other CUDA libraries.
+
+sudo dnf install -y cuda-toolkit
+
+CUDA container toolkit
+Provides the CUDA runtime and libraries inside containerized environments so CUDA applications can run without installing CUDA on the host system. Used inside NVIDIA containers (e.g., TensorFlow, PyTorch).
+
+docker run --gpus all nvidia/cuda:12.2-runtime nvidia-smi
+
+
+NVIDIA conter toolkit
+
+Guide is here
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html
+
+3) Podman CDI hook
+------------------
+
+Generate the CDI file: Run the following command to generate the CDI specification: 
+
+sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml.
+
+Verify the CDI devices: 
+
+nvidia-ctk cdi list 
+to check the generated CDI devices. 
+(should show gpu=0, gpu=all, gpu=uuid)
+
+In podman run use --device to indicate the GPU to include. For example
+
+podman run --rm --device nvidia.com/gpu=all --security-opt=label=disable ubuntu nvidia-smi -L
+
